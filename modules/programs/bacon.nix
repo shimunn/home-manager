@@ -10,7 +10,7 @@ let
   settingsFormat = pkgs.formats.toml { };
 in
 {
-  meta.maintainers = [ ];
+  meta.maintainers = [ maintainers.shimunn ];
 
   options.programs.bacon = {
     enable = mkEnableOption "background rust code check";

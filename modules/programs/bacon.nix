@@ -8,8 +8,7 @@ let
 
   package = pkgs.bacon;
   settingsFormat = pkgs.formats.toml { };
-in
-{
+in {
   meta.maintainers = [ maintainers.shimunn ];
 
   options.programs.bacon = {
@@ -17,7 +16,7 @@ in
 
     preferences = mkOption {
       type = settingsFormat.type;
-      default = {
+      example = {
         jobs.default = {
           command = [ "cargo" "build" "--all-features" "--color" "always" ];
           need_stdout = true;
@@ -33,6 +32,7 @@ in
   config = mkIf cfg.enable {
     home.packages = [ package ];
 
-    xdg.configFile."bacon/prefs.toml".source = settingsFormat.generate "prefs.toml" cfg.preferences;
+    xdg.configFile."bacon/prefs.toml".source =
+      settingsFormat.generate "prefs.toml" cfg.preferences;
   };
 }

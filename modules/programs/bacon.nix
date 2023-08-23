@@ -9,12 +9,12 @@ let
   package = pkgs.bacon;
   settingsFormat = pkgs.formats.toml { };
 in {
-  meta.maintainers = [ maintainers.shimunn ];
+  meta.maintainers = [ hm.maintainers.shimunn ];
 
   options.programs.bacon = {
-    enable = mkEnableOption "background rust code check";
+    enable = mkEnableOption "bacon, a background rust code checker";
 
-    preferences = mkOption {
+    settings = mkOption {
       type = settingsFormat.type;
       example = {
         jobs.default = {
@@ -24,15 +24,15 @@ in {
       };
       description = ''
         Bacon configuration.
-        for available settings see https://dystroy.org/bacon/#global-preferences
+        For available settings see <https://dystroy.org/bacon/#global-preferences>.
       '';
     };
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ package ];
+    home.packages = [ pkgs.bacon ];
 
     xdg.configFile."bacon/prefs.toml".source =
-      settingsFormat.generate "prefs.toml" cfg.preferences;
+      settingsFormat.generate "prefs.toml" cfg.settings;
   };
 }

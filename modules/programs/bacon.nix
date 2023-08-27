@@ -6,7 +6,6 @@ let
 
   cfg = config.programs.bacon;
 
-  package = pkgs.bacon;
   settingsFormat = pkgs.formats.toml { };
 in {
   meta.maintainers = [ hm.maintainers.shimunn ];

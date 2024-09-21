@@ -214,6 +214,24 @@ in {
         };
       };
 
+      diff-highlight = {
+        enable = mkEnableOption "" // {
+          description = ''
+            Enable the contrib {command}`diff-highlight` syntax highlighter.
+            See <https://github.com/git/git/blob/master/contrib/diff-highlight/README>,
+          '';
+        };
+
+        pagerOpts = mkOption {
+          type = types.listOf types.str;
+          default = [ ];
+          example = [ "--tabs=4" "-RFX" ];
+          description = ''
+            Arguments to be passed to {command}`less`.
+          '';
+        };
+      };
+
       difftastic = {
         enable = mkEnableOption "" // {
           description = ''
@@ -221,6 +239,8 @@ in {
             See <https://github.com/Wilfred/difftastic>.
           '';
         };
+
+        package = mkPackageOption pkgs "difftastic" { };
 
         background = mkOption {
           type = types.enum [ "light" "dark" ];
@@ -358,11 +378,15 @@ in {
       home.packages = [ cfg.package ];
       assertions = [{
         assertion = let
-          enabled =
-            [ cfg.delta.enable cfg.diff-so-fancy.enable cfg.difftastic.enable ];
+          enabled = [
+            cfg.delta.enable
+            cfg.diff-so-fancy.enable
+            cfg.difftastic.enable
+            cfg.diff-highlight.enable
+          ];
         in count id enabled <= 1;
         message =
-          "Only one of 'programs.git.delta.enable' or 'programs.git.difftastic.enable' or 'programs.git.diff-so-fancy.enable' can be set to true at the same time.";
+          "Only one of 'programs.git.delta.enable' or 'programs.git.difftastic.enable' or 'programs.git.diff-so-fancy.enable' or 'programs.git.diff-highlight' can be set to true at the same time.";
       }];
 
       programs.git.iniContent.user = {
@@ -477,12 +501,24 @@ in {
         };
     })
 
+    (mkIf cfg.diff-highlight.enable {
+      programs.git.iniContent = let
+        dhCommand =
+          "${cfg.package}/share/git/contrib/diff-highlight/diff-highlight";
+      in {
+        core.pager = "${dhCommand} | ${getExe pkgs.less} ${
+            escapeShellArgs cfg.diff-highlight.pagerOpts
+          }";
+        interactive.diffFilter = dhCommand;
+      };
+    })
+
     (mkIf cfg.difftastic.enable {
-      home.packages = [ pkgs.difftastic ];
+      home.packages = [ cfg.difftastic.package ];
 
       programs.git.iniContent = let
         difftCommand = concatStringsSep " " [
-          "${pkgs.difftastic}/bin/difft"
+          "${getExe cfg.difftastic.package}"
           "--color ${cfg.difftastic.color}"
           "--background ${cfg.difftastic.background}"
           "--display ${cfg.difftastic.display}"

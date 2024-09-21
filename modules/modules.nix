@@ -167,6 +167,7 @@ let
     ./programs/ncspot.nix
     ./programs/ne.nix
     ./programs/neomutt.nix
+    ./programs/neovide.nix
     ./programs/neovim.nix
     ./programs/newsboat.nix
     ./programs/nheko.nix
@@ -374,6 +375,7 @@ let
     ./services/tahoe-lafs.nix
     ./services/taskwarrior-sync.nix
     ./services/trayer.nix
+    ./services/trayscale.nix
     ./services/twmn.nix
     ./services/udiskie.nix
     ./services/unclutter.nix
